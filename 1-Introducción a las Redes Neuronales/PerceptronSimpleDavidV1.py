@@ -190,7 +190,6 @@ def simplePerceptron_model(X, S, num_iterations = 1000, min_error=0, print_cost=
         m = número de ejemplos de entrenamiento
         costs = Acumulativo de los errores totales de cada iteración
     '''
-    
     w, b = inicializar_Parametros(len(X[0,:]))
     m = len(X[:,0])
     errorTotal = 0.0
@@ -206,19 +205,16 @@ def simplePerceptron_model(X, S, num_iterations = 1000, min_error=0, print_cost=
             
             #Calculo del nivel de activación y de la función de activación
             Y = activation_forward(X[exampleNum,:], w, b)
-
             #Calculo del error
             error = compute_error(Y, S[exampleNum])
             errorTotal += error
-
             #Calculo del aprendizaje
             dw, db = backward(X[exampleNum, :], S[exampleNum], error)
-
+            
             #Actualizar Parámetros
             w, b = update_parameters(w, b, dw, db)
-
             error = 0
-
+            
         #dividimos por m para normalizar
         #Por ejemplo, si se equivoco en todos los ejemplos, errorTotal es igual a m
         #En este caso el error total en esta iteración es 1, 100%
@@ -235,15 +231,16 @@ def simplePerceptron_model(X, S, num_iterations = 1000, min_error=0, print_cost=
     
     return w, b, costs, contIter
 
-def pruebaModeloAnd(w, b):
+def pruebaModeloAnd(w, b, X):
     x1 = float(input("digite feature 1 "))
     x2 = float(input("digite feature 2 "))
     Y = prediccion(np.array([x1, x2]), w, b) #AND
     SalidaEsperada = input("digite la salida esperada ")
     print(f'Salida esperada {SalidaEsperada} el modelo predice: {Y} ')
-    pruebaModeloAnd(w, b)
+    drawFeautesSpaceWithFinalWeightEquation(w, b, X)
+    pruebaModeloAnd(w, b, X)
 
-def pruebaModeloCancer(w, b):
+def pruebaModeloCancer(w, b, X):
     x1 = float(input("digite feature 1 "))
     x2 = float(input("digite feature 2 "))
     x3 = float(input("digite feature 3 "))
@@ -257,12 +254,19 @@ def pruebaModeloCancer(w, b):
     Y = prediccion(np.array([x1, x2, x3, x4, x5, x6, x7, x8, x9]), w, b) #CANCER
     SalidaEsperada = input("digite la salida esperada ")
     print(f'Salida esperada {SalidaEsperada} el modelo predice: {Y} ')
-    pruebaModeloCancer(w, b)
+    drawFeautesSpaceWithFinalWeightEquation(w, b, X)
+    pruebaModeloCancer(w, b, X)
 
 def getFilePathData(opcion):
     filePathBase = "D:/David A/Repositories/DiplomadoDeepLearning/1-Introducción a las Redes Neuronales/"
     fileName = 'trainAND.csv' if (opcion == "1") else 'breastCancer.csv'
     return f'{filePathBase}{fileName}'
+
+def drawFeautesSpaceWithFinalWeightEquation(w, b, X):
+    x1 = [0, float(-b/w[0])]
+    x2 = [float(-b/w[1]), 0]
+    plt.plot(X.T[0,:], X.T[1,:], 'ro', x1, x2, 'r--')
+    plt.show()
 
 def main_function():
     dataProcess = input("digite 1 para AND, 2 para Cancer ")    
@@ -270,10 +274,11 @@ def main_function():
     data = leer_Datos(file_path)
     w, b, costs, contIter = simplePerceptron_model(data[0], data[1], num_iterations = 1000, min_error = 0.02, print_cost = True)
     print(w, b, costs, contIter)
-    if(dataProcess == 1):
-        pruebaModeloAnd(w, b)
+    if(dataProcess == '1'):
+        pruebaModeloAnd(w, b, data[0])
     else:
-        pruebaModeloCancer(w, b)    
+        pruebaModeloCancer(w, b, data[0])    
+
 
 if(__name__ == '__main__'):
     main_function()
